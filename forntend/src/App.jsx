@@ -311,10 +311,10 @@ function App() {
               <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{user.email}</p>
             </div>
 
-            <button 
-              className="btn btn-secondary btn-icon" 
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} 
-              title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"} 
+            <button
+              className="btn btn-secondary btn-icon"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
               style={{ padding: '10px' }}
             >
               {theme === 'dark' ? <Sun size={18} style={{ color: '#f59e0b' }} /> : <Moon size={18} style={{ color: '#6366f1' }} />}
