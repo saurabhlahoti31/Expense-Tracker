@@ -1,0 +1,14 @@
+{
+  "name": "finsync-workspace",
+  "version": "1.0.0",
+  "description": "Root workspace configuration for FinSync Smart Expense Tracker",
+  "scripts": {
+    "install:all": "npm install --prefix backend && npm install --prefix forntend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix forntend",
+    "dev": "start /B npm run dev:backend && npm run dev:frontend"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
