@@ -346,7 +346,7 @@ const resetPassword = async (req, res) => {
     user.password = newPassword;
     user.resetPasswordOtp = null;
     user.resetPasswordOtpExpires = null;
-    
+
     // Automatically verify email since they verified via OTP code
     if (!user.isVerified) {
       user.isVerified = true;

@@ -9,36 +9,42 @@
   --bg-primary: #0a0f1d;
   --bg-secondary: #131a30;
   --bg-tertiary: #1b2440;
-  --accent-primary: #6366f1; /* Indigo */
-  --accent-secondary: #8b5cf6; /* Purple */
+  --accent-primary: #6366f1;
+  /* Indigo */
+  --accent-secondary: #8b5cf6;
+  /* Purple */
   --accent-glow: rgba(99, 102, 241, 0.15);
-  
+
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
-  
-  --color-success: #10b981; /* Emerald */
-  --color-danger: #ef4444; /* Rose */
-  --color-warning: #f59e0b; /* Amber */
-  --color-info: #0ea5e9; /* Sky */
-  
+
+  --color-success: #10b981;
+  /* Emerald */
+  --color-danger: #ef4444;
+  /* Rose */
+  --color-warning: #f59e0b;
+  /* Amber */
+  --color-info: #0ea5e9;
+  /* Sky */
+
   --border-light: rgba(255, 255, 255, 0.07);
   --border-focus: rgba(99, 102, 241, 0.5);
-  
+
   --glass-bg: rgba(19, 26, 48, 0.75);
   --glass-border: rgba(255, 255, 255, 0.06);
   --glass-blur: blur(12px);
-  
+
   --shadow-sm: 0 2px 8px -1px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 16px -6px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
   --shadow-glow: 0 0 20px 0 rgba(99, 102, 241, 0.25);
-  
+
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
   --radius-full: 9999px;
-  
+
   --transition-fast: 0.15s ease;
   --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -51,17 +57,17 @@
   --accent-primary: #4f46e5;
   --accent-secondary: #7c3aed;
   --accent-glow: rgba(79, 70, 229, 0.1);
-  
+
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-muted: #94a3b8;
-  
+
   --border-light: rgba(0, 0, 0, 0.08);
   --border-focus: rgba(79, 70, 229, 0.4);
-  
+
   --glass-bg: rgba(255, 255, 255, 0.85);
   --glass-border: rgba(0, 0, 0, 0.07);
-  
+
   --shadow-sm: 0 2px 8px -1px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 16px -6px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 20px 40px -15px rgba(0, 0, 0, 0.12);
@@ -69,7 +75,7 @@
 }
 
 .light-mode body {
-  background-image: 
+  background-image:
     radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.04) 0%, transparent 40%),
     radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 45%);
 }
@@ -106,7 +112,7 @@ body {
   color: var(--text-primary);
   min-height: 100vh;
   overflow-x: hidden;
-  background-image: 
+  background-image:
     radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
     radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 45%);
   background-attachment: fixed;
@@ -114,28 +120,57 @@ body {
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 15px 0 rgba(99, 102, 241, 0.2); }
-  50% { box-shadow: 0 0 25px 5px rgba(99, 102, 241, 0.35); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 15px 0 rgba(99, 102, 241, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 25px 5px rgba(99, 102, 241, 0.35);
+  }
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .animate-fade-in {
@@ -166,7 +201,10 @@ body {
 }
 
 /* Global Typography & Elements */
-button, input, select, textarea {
+button,
+input,
+select,
+textarea {
   font-family: inherit;
   color: inherit;
 }
@@ -181,7 +219,12 @@ a:hover {
   color: var(--accent-secondary);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -309,10 +352,29 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-full);
 }
 
-.badge-success { background: rgba(16, 185, 129, 0.15); color: var(--color-success); border: 1px solid rgba(16, 185, 129, 0.25); }
-.badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--color-danger); border: 1px solid rgba(239, 68, 68, 0.25); }
-.badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--color-warning); border: 1px solid rgba(245, 158, 11, 0.25); }
-.badge-info { background: rgba(14, 165, 233, 0.15); color: var(--color-info); border: 1px solid rgba(14, 165, 233, 0.25); }
+.badge-success {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--color-success);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.badge-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--color-danger);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.badge-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--color-warning);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.badge-info {
+  background: rgba(14, 165, 233, 0.15);
+  color: var(--color-info);
+  border: 1px solid rgba(14, 165, 233, 0.25);
+}
 
 /* Layout Grid & Structures */
 .dashboard-container {
@@ -836,8 +898,15 @@ tr:hover td {
 }
 
 @keyframes floatPreview {
-  0%, 100% { transform: translateY(0px) rotate(1deg); }
-  50% { transform: translateY(-12px) rotate(-1deg); }
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(1deg);
+  }
+
+  50% {
+    transform: translateY(-12px) rotate(-1deg);
+  }
 }
 
 /* Features Grid Section */
@@ -1169,20 +1238,24 @@ tr:hover td {
 .light-mode .landing-navbar {
   background: rgba(244, 246, 250, 0.7);
 }
+
 .light-mode .landing-navbar.scrolled {
   background: rgba(244, 246, 250, 0.95);
 }
+
 .light-mode .preview-container {
   background: linear-gradient(135deg, rgba(238, 242, 246, 0.7) 0%, rgba(255, 255, 255, 0.9) 100%);
   box-shadow: var(--shadow-lg), 0 0 40px rgba(79, 70, 229, 0.05);
 }
+
 .light-mode .budget-breakdown-row {
   background: rgba(0, 0, 0, 0.01);
 }
+
 .light-mode .budget-breakdown-row:hover {
   background: rgba(0, 0, 0, 0.03);
 }
+
 .light-mode .footer-section {
   background: rgba(238, 242, 246, 0.9);
 }
-

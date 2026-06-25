@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Mail, Lock, User as UserIcon, LogOut, CheckCircle, AlertCircle, RefreshCw, 
-  Sun, Moon, Eye, EyeOff, Shield, Activity, Sparkles, DollarSign, 
-  TrendingDown, ArrowRight, ChevronRight, Star, HelpCircle, Check, X, 
-  Play, Users, BarChart3, CreditCard 
+import {
+  Mail, Lock, User as UserIcon, LogOut, CheckCircle, AlertCircle, RefreshCw,
+  Sun, Moon, Eye, EyeOff, Shield, Activity, Sparkles, DollarSign,
+  TrendingDown, ArrowRight, ChevronRight, Star, HelpCircle, Check, X,
+  Play, Users, BarChart3, CreditCard
 } from 'lucide-react';
 import Dashboard from './components/Dashboard';
+import logoImg from './assets/raw_logo.jpg';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -460,16 +461,13 @@ function App() {
               width: '40px',
               height: '40px',
               borderRadius: '10px',
-              background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)',
+              overflow: 'hidden',
+              boxShadow: '0 4px 10px rgba(99, 102, 241, 0.3)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontWeight: 800,
-              fontSize: '1.2rem',
-              color: '#fff',
-              boxShadow: '0 4px 10px rgba(99, 102, 241, 0.3)',
             }}>
-              ₹
+              <img src={logoImg} alt="FinSync Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
             <div>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 800, background: 'linear-gradient(90deg, var(--text-primary), var(--accent-secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
@@ -521,8 +519,8 @@ function App() {
         {isChangePwdOpen && (
           <div className="modal-overlay" style={{ zIndex: 2000 }}>
             <div className="glass-panel modal-content animate-slide-up" style={{ maxWidth: '440px', padding: '36px', position: 'relative' }}>
-              <button 
-                className="modal-close" 
+              <button
+                className="modal-close"
                 onClick={() => {
                   setIsChangePwdOpen(false);
                   setCurrentPassword('');
@@ -756,16 +754,13 @@ function App() {
             width: '40px',
             height: '40px',
             borderRadius: '10px',
-            background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)',
+            overflow: 'hidden',
+            boxShadow: '0 4px 10px rgba(99, 102, 241, 0.3)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontWeight: 800,
-            fontSize: '1.25rem',
-            color: '#fff',
-            boxShadow: '0 4px 10px rgba(99, 102, 241, 0.3)',
           }}>
-            ₹
+            <img src={logoImg} alt="FinSync Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
           <div>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 800, background: 'linear-gradient(90deg, var(--text-primary), var(--accent-secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
@@ -842,7 +837,7 @@ function App() {
                   <h4 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#10b981', marginTop: '4px' }}>63%</h4>
                 </div>
               </div>
-              
+
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-light)', borderRadius: '8px', padding: '10px' }}>
                 {/* SVG Mini Doughnut Preview */}
                 <svg width="100" height="100" viewBox="0 0 100 100">
@@ -1053,21 +1048,21 @@ function App() {
 
         <div className="faq-list">
           {faqs.map((faq, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className={`glass-panel faq-item ${activeFaq === index ? 'active' : ''}`}
               onClick={() => toggleFaq(index)}
               style={{ transition: 'all 0.3s ease' }}
             >
               <div className="faq-question">
                 <span>{faq.q}</span>
-                <ChevronRight 
-                  size={18} 
-                  style={{ 
-                    transform: activeFaq === index ? 'rotate(90deg)' : 'rotate(0deg)', 
+                <ChevronRight
+                  size={18}
+                  style={{
+                    transform: activeFaq === index ? 'rotate(90deg)' : 'rotate(0deg)',
                     transition: 'transform 0.3s ease',
-                    color: 'var(--accent-primary)' 
-                  }} 
+                    color: 'var(--accent-primary)'
+                  }}
                 />
               </div>
               <div className="faq-answer">
@@ -1087,15 +1082,12 @@ function App() {
                 width: '32px',
                 height: '32px',
                 borderRadius: '8px',
-                background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)',
+                overflow: 'hidden',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontWeight: 800,
-                fontSize: '1rem',
-                color: '#fff',
               }}>
-                ₹
+                <img src={logoImg} alt="FinSync Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>FinSync</h3>
             </div>
@@ -1138,8 +1130,8 @@ function App() {
         <div className="modal-overlay" style={{ zIndex: 3000 }}>
           <div className="glass-panel auth-card animate-slide-up" style={{ maxWidth: '440px', padding: '40px', position: 'relative' }}>
             {/* Close modal button */}
-            <button 
-              className="modal-close" 
+            <button
+              className="modal-close"
               onClick={() => { setIsAuthModalOpen(false); setVerifyingEmail(null); }}
               style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', cursor: 'pointer' }}
             >
