@@ -453,7 +453,181 @@ const sendOtpEmail = async (userEmail, userName, otp) => {
   }
 };
 
+const sendResetPasswordEmail = async (userEmail, userName, otp) => {
+  console.log(`\n==========================================`);
+  console.log(`🔑 [PASSWORD RESET OTP FOR ${userEmail}]`);
+  console.log(`   NAME: ${userName}`);
+  console.log(`   OTP CODE: ${otp}`);
+  console.log(`==========================================\n`);
+
+  try {
+    const host = (process.env.EMAIL_HOST || '').trim();
+    const port = parseInt((process.env.EMAIL_PORT || '465').trim(), 10);
+    const user = (process.env.EMAIL_USER || '').trim();
+    const pass = (process.env.EMAIL_PASS || '').trim();
+
+    if (!host || !user || !pass) {
+      console.warn('⚠️ SMTP email configuration is missing or incomplete in .env. Skipping actual email dispatch.');
+      return null;
+    }
+
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure: port === 465,
+      auth: { user, pass },
+      tls: {
+        rejectUnauthorized: false
+      }
+    });
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0a0f1d;
+            color: #f8fafc;
+            margin: 0;
+            padding: 0;
+          }
+          .email-wrapper {
+            background-color: #0a0f1d;
+            background-image: linear-gradient(135deg, rgba(99, 102, 241, 0.04) 0%, rgba(139, 92, 246, 0.04) 100%);
+            padding: 40px 20px;
+          }
+          .container {
+            max-width: 520px;
+            margin: 0 auto;
+            background: #131a30;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+            overflow: hidden;
+          }
+          .header {
+            background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
+            padding: 30px 40px;
+            text-align: center;
+          }
+          .logo {
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+          }
+          .subtitle {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.85);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+          }
+          .content {
+            padding: 35px;
+            text-align: center;
+          }
+          .welcome {
+            font-size: 15px;
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            text-align: left;
+          }
+          .otp-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 30px 0;
+            display: inline-block;
+            width: 80%;
+            box-sizing: border-box;
+          }
+          .otp-code {
+            font-size: 38px;
+            font-weight: 800;
+            color: #f43f5e;
+            letter-spacing: 8px;
+            margin: 10px 0;
+          }
+          .otp-expiry {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 5px;
+          }
+          .footer {
+            background: rgba(10, 15, 29, 0.4);
+            padding: 24px 40px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+          }
+          .footer p {
+            font-size: 12px;
+            color: #64748b;
+            margin: 0;
+            line-height: 1.5;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="email-wrapper">
+          <div class="container">
+            <div class="header">
+              <div class="logo">₹ FinSync</div>
+              <div class="subtitle">Reset Password</div>
+            </div>
+            
+            <div class="content">
+              <div class="welcome">
+                Hi ${userName},<br/><br/>
+                We received a request to reset your password. Use the verification OTP code below to complete the reset process:
+              </div>
+              
+              <div class="otp-card">
+                <div style="font-size: 11px; text-transform: uppercase; color: #94a3b8; letter-spacing: 1px; font-weight: 600;">Reset Code</div>
+                <div class="otp-code">${otp}</div>
+                <div class="otp-expiry">This code is valid for 10 minutes. Do not share it with anyone.</div>
+              </div>
+              
+              <div style="color: #94a3b8; font-size: 14px; text-align: left; line-height: 1.6; margin-top: 10px;">
+                If you did not request a password reset, you can safely ignore this email. Your password will remain unchanged.
+              </div>
+            </div>
+            
+            <div class="footer">
+              <p>Smart Finance, Made Simple.</p>
+              <p style="margin-top: 5px;">FinSync &copy; 2026. All rights reserved.</p>
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const mailOptions = {
+      from: `"FinSync Accounts" <${process.env.EMAIL_USER}>`,
+      to: `"${userName}" <${userEmail}>`,
+      subject: `🔑 FinSync Password Reset OTP: ${otp}`,
+      text: `Hi ${userName},\n\nWe received a request to reset your password. Use the code below to reset it:\n\nReset Code: ${otp}\n\nThis code is valid for 10 minutes.\n\nSmart Finance, Made Simple.`,
+      html: htmlContent,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`[Reset Password Email Sent] Message ID: ${info.messageId}`);
+    return info;
+  } catch (error) {
+    console.error('Error sending reset password email:', error.message);
+    console.log(`⚠️ SMTP Error: Reset Code was not emailed. Copy it from the console above!`);
+  }
+};
+
 module.exports = {
   sendExpenseListEmail,
-  sendOtpEmail
+  sendOtpEmail,
+  sendResetPasswordEmail
 };
