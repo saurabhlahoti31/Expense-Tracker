@@ -1259,3 +1259,235 @@ tr:hover td {
 .light-mode .footer-section {
   background: rgba(238, 242, 246, 0.9);
 }
+
+/* ==========================================================================
+   RESPONSIVE DESIGN SYSTEM OVERRIDES & ADDITIONS
+   ========================================================================== */
+
+/* Dashboard Sticky Header styling */
+.dashboard-header {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--border-light);
+  padding: 16px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: var(--transition-normal);
+}
+
+.dashboard-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dashboard-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Mobile Menu Panel */
+.mobile-menu-panel {
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-light);
+  padding: 24px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 999;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp var(--transition-fast) forwards;
+}
+
+.mobile-menu-links {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mobile-menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid var(--border-light);
+  padding-top: 16px;
+}
+
+/* Hamburger toggle styling */
+.hamburger-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-primary);
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+
+.hamburger-toggle:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.light-mode .hamburger-toggle:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Screen widths <= 768px (Tablets & Mobiles) */
+@media (max-width: 768px) {
+  /* Landing page navbar */
+  .landing-navbar {
+    padding: 0 20px;
+  }
+
+  .nav-links {
+    display: none; /* Hide desktop nav links */
+  }
+
+  .nav-actions {
+    display: none; /* Hide desktop nav actions */
+  }
+
+  .hamburger-toggle {
+    display: block; /* Show hamburger button */
+  }
+
+  /* Authenticated Dashboard Header */
+  .dashboard-header {
+    padding: 16px 20px;
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .dashboard-header-brand {
+    justify-content: center;
+  }
+
+  .dashboard-header-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .dashboard-header-user {
+    width: 100%;
+    text-align: center !important;
+    margin-bottom: 4px;
+  }
+
+  /* Stats grid adjustment */
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .stat-card {
+    padding: 18px;
+  }
+
+  .stat-info p {
+    font-size: 1.5rem;
+  }
+
+  /* Charts Container layout wrapping */
+  .charts-grid {
+    gap: 20px;
+  }
+
+  .chart-panel {
+    padding: 20px;
+  }
+
+  /* Expense Table modifications */
+  .table-panel {
+    padding: 16px;
+  }
+
+  .table-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .table-filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .table-filters > div,
+  .table-filters select,
+  .table-filters button {
+    width: 100% !important;
+  }
+
+  /* Modal contents spacing */
+  .modal-content {
+    padding: 24px;
+    max-width: 92% !important;
+  }
+}
+
+/* Screen widths <= 480px (Extra Small Mobile Devices) */
+@media (max-width: 480px) {
+  /* Landing page tweaks */
+  .hero-section {
+    padding-top: 110px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .hero-title {
+    font-size: 2.3rem;
+  }
+
+  .hero-desc {
+    font-size: 1rem;
+  }
+
+  .hero-ctas {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .hero-ctas button {
+    width: 100%;
+  }
+
+  /* Calculator grid stacking */
+  .calculator-container {
+    padding: 24px 16px;
+  }
+
+  .calculator-grid {
+    gap: 24px;
+  }
+
+  /* Bank Feed Option Cards Grid mapping to 2 columns and wrapping nicely */
+  .bank-grid {
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 10px;
+  }
+
+  .bank-option {
+    padding: 12px 8px;
+    font-size: 0.8rem;
+    gap: 6px;
+  }
+
+  .bank-logo {
+    font-size: 1.5rem;
+  }
+}

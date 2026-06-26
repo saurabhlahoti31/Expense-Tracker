@@ -3,7 +3,7 @@ import {
   Mail, Lock, User as UserIcon, LogOut, CheckCircle, AlertCircle, RefreshCw,
   Sun, Moon, Eye, EyeOff, Shield, Activity, Sparkles, DollarSign,
   TrendingDown, ArrowRight, ChevronRight, Star, HelpCircle, Check, X,
-  Play, Users, BarChart3, CreditCard
+  Play, Users, BarChart3, CreditCard, Menu
 } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import logoImg from './assets/raw_logo.jpg';
@@ -37,6 +37,7 @@ function App() {
   const [activeFaq, setActiveFaq] = useState(null);
   const [calcIncome, setCalcIncome] = useState('50000');
   const [scrolled, setScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Forgot Password Fields
   const [resetEmail, setResetEmail] = useState('');
@@ -444,19 +445,8 @@ function App() {
     return (
       <div className="animate-fade-in">
         {/* Navigation / Header */}
-        <header style={{
-          background: 'var(--glass-bg)',
-          backdropFilter: 'var(--glass-blur)',
-          borderBottom: '1px solid var(--border-light)',
-          padding: '16px 40px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <header className="dashboard-header">
+          <div className="dashboard-header-brand">
             <div style={{
               width: '40px',
               height: '40px',
@@ -469,7 +459,7 @@ function App() {
             }}>
               <img src={logoImg} alt="FinSync Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
-            <div>
+            <div style={{ textAlign: 'left' }}>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 800, background: 'linear-gradient(90deg, var(--text-primary), var(--accent-secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 FinSync
               </h2>
@@ -477,8 +467,8 @@ function App() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <div style={{ textAlign: 'right' }}>
+          <div className="dashboard-header-actions">
+            <div className="dashboard-header-user" style={{ textAlign: 'right' }}>
               <p style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>{user.name}</p>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{user.email}</p>
             </div>
@@ -762,7 +752,7 @@ function App() {
           }}>
             <img src={logoImg} alt="FinSync Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
-          <div>
+          <div style={{ textAlign: 'left' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 800, background: 'linear-gradient(90deg, var(--text-primary), var(--accent-secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               FinSync
             </h2>
@@ -792,7 +782,46 @@ function App() {
             Get Started
           </button>
         </div>
+
+        {/* Hamburger Menu Toggle Button */}
+        <button
+          className="hamburger-toggle"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label="Toggle Navigation Menu"
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </nav>
+
+      {/* Mobile Menu Panel Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="mobile-menu-panel">
+          <div className="mobile-menu-links">
+            <span className="nav-link" onClick={() => { scrollToSection('features'); setIsMobileMenuOpen(false); }}>Features</span>
+            <span className="nav-link" onClick={() => { scrollToSection('calculator'); setIsMobileMenuOpen(false); }}>Budget Calculator</span>
+            <span className="nav-link" onClick={() => { scrollToSection('testimonials'); setIsMobileMenuOpen(false); }}>Reviews</span>
+            <span className="nav-link" onClick={() => { scrollToSection('faq'); setIsMobileMenuOpen(false); }}>FAQ</span>
+          </div>
+          <div className="mobile-menu-actions">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Theme</span>
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="btn btn-secondary btn-icon"
+                style={{ padding: '10px' }}
+              >
+                {theme === 'dark' ? <Sun size={18} style={{ color: '#f59e0b' }} /> : <Moon size={18} style={{ color: '#6366f1' }} />}
+              </button>
+            </div>
+            <button className="btn btn-secondary" style={{ width: '100%', padding: '12px' }} onClick={() => { setAuthView('login'); setIsAuthModalOpen(true); setIsMobileMenuOpen(false); }}>
+              Sign In
+            </button>
+            <button className="btn btn-primary" style={{ width: '100%', padding: '12px' }} onClick={() => { setAuthView('register'); setIsAuthModalOpen(true); setIsMobileMenuOpen(false); }}>
+              Get Started
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Hero Section */}
       <section className="hero-section" id="hero">

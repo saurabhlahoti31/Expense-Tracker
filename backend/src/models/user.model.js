@@ -1,6 +1,15 @@
+/**
+ * @file user.model.js
+ * @description Mongoose schema definition, validators, hooks, and instance methods for the User collection.
+ */
+
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
+/**
+ * User Schema definition containing personal registration information,
+ * bank link settings, verification OTP codes, and budget stats.
+ */
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -64,11 +73,15 @@ const userSchema = new mongoose.Schema(
     },
   },
   {
+    // Auto-generate createdAt and updatedAt timestamps
     timestamps: true,
   }
 );
 
-// Hash the password before saving
+/**
+ * Pre-save Mongoose hook to automatically hash user passwords using bcrypt
+ * when the password attribute is modified or newly initialized.
+ */
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) {
     return;
@@ -77,7 +90,13 @@ userSchema.pre('save', async function () {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Compare password method
+/**
+ * Compares an incoming plain-text password with the saved password hash.
+ *
+ * @async
+ * @param {string} enteredPassword - Raw input password to compare
+ * @returns {Promise<boolean>} True if match, otherwise false
+ */
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };

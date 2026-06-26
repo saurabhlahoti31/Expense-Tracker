@@ -1,9 +1,20 @@
+/**
+ * @file expense.controller.js
+ * @description Controllers managing expense lifecycle: listing with dynamic search filters, pagination, creation, updates, removal, CSV exports, reporting aggregations, and email reports.
+ */
+
 const Expense = require('../models/expense.model');
 const { sendExpenseListEmail } = require('../utils/email');
 
-// @desc    Get user expenses with filters and search
-// @route   GET /api/expenses
-// @access  Private
+/**
+ * @desc    Get user expenses with filters (category, date range, search query) and pagination
+ * @route   GET /api/expenses
+ * @access  Private
+ *
+ * @param {import('express').Request} req - Express request object with query parameters {category, search, startDate, endDate, limit, page}
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<import('express').Response>} Paginated array of matching expense records
+ */
 const getExpenses = async (req, res) => {
   try {
     const { category, search, startDate, endDate, limit, page } = req.query;
@@ -14,12 +25,12 @@ const getExpenses = async (req, res) => {
       query.category = category;
     }
 
-    // Search by title (case-insensitive)
+    // Search by title (case-insensitive regex match)
     if (search) {
       query.title = { $regex: search, $options: 'i' };
     }
 
-    // Filter by date range
+    // Filter by date range (parsed into ISO dates)
     if (startDate || endDate) {
       query.date = {};
       if (startDate) {
@@ -30,19 +41,21 @@ const getExpenses = async (req, res) => {
       }
     }
 
-    // Pagination
+    // Configure pagination parameters
     const pageNum = parseInt(page, 10) || 1;
     const limitNum = parseInt(limit, 10) || 50;
     const skipNum = (pageNum - 1) * limitNum;
 
+    // Execute query with sorting, pagination skip, and page limit constraints
     const expenses = await Expense.find(query)
       .sort({ date: -1, createdAt: -1 })
       .skip(skipNum)
       .limit(limitNum);
 
+    // Count total matches ignoring pagination limits
     const total = await Expense.countDocuments(query);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       count: expenses.length,
       pagination: {
@@ -54,13 +67,19 @@ const getExpenses = async (req, res) => {
     });
   } catch (error) {
     console.error('Get Expenses Error:', error.message);
-    res.status(500).json({ success: false, message: 'Server Error: ' + error.message });
+    return res.status(500).json({ success: false, message: 'Server Error: ' + error.message });
   }
 };
 
-// @desc    Create a new expense
-// @route   POST /api/expenses
-// @access  Private
+/**
+ * @desc    Create a new expense record
+ * @route   POST /api/expenses
+ * @access  Private
+ *
+ * @param {import('express').Request} req - Express request with body {title, amount, category, date, source}
+ * @param {import('express').Response} res - Express response
+ * @returns {Promise<import('express').Response>} Created expense record document
+ */
 const createExpense = async (req, res) => {
   try {
     const { title, amount, category, date, source } = req.body;
@@ -69,6 +88,7 @@ const createExpense = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Please provide title, amount and category' });
     }
 
+    // Instantiate and store new transaction record
     const expense = await Expense.create({
       userId: req.user.id,
       title,
@@ -78,19 +98,25 @@ const createExpense = async (req, res) => {
       source: source || 'Manual',
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: expense,
     });
   } catch (error) {
     console.error('Create Expense Error:', error.message);
-    res.status(500).json({ success: false, message: 'Server Error: ' + error.message });
+    return res.status(500).json({ success: false, message: 'Server Error: ' + error.message });
   }
 };
 
-// @desc    Update an expense
-// @route   PUT /api/expenses/:id
-// @access  Private
+/**
+ * @desc    Update fields of an existing expense record
+ * @route   PUT /api/expenses/:id
+ * @access  Private
+ *
+ * @param {import('express').Request} req - Express request with params {id} and body {title, amount, category, date, source}
+ * @param {import('express').Response} res - Express response
+ * @returns {Promise<import('express').Response>} Updated expense record document
+ */
 const updateExpense = async (req, res) => {
   try {
     const { title, amount, category, date, source } = req.body;
@@ -101,12 +127,12 @@ const updateExpense = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Expense not found' });
     }
 
-    // Make sure user owns the expense
+    // Ensure authorization by checking that the resource belongs to the requesting user
     if (expense.userId.toString() !== req.user.id) {
       return res.status(401).json({ success: false, message: 'Not authorized to edit this expense' });
     }
 
-    // Update fields
+    // Perform partial/full updates while falling back to existing values where parameters are omitted
     expense = await Expense.findByIdAndUpdate(
       req.params.id,
       {
@@ -119,19 +145,25 @@ const updateExpense = async (req, res) => {
       { new: true, runValidators: true }
     );
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: expense,
     });
   } catch (error) {
     console.error('Update Expense Error:', error.message);
-    res.status(500).json({ success: false, message: 'Server Error: ' + error.message });
+    return res.status(500).json({ success: false, message: 'Server Error: ' + error.message });
   }
 };
 
-// @desc    Delete an expense
-// @route   DELETE /api/expenses/:id
-// @access  Private
+/**
+ * @desc    Delete an expense record
+ * @route   DELETE /api/expenses/:id
+ * @access  Private
+ *
+ * @param {import('express').Request} req - Express request with params {id}
+ * @param {import('express').Response} res - Express response
+ * @returns {Promise<import('express').Response>} Success confirmation code
+ */
 const deleteExpense = async (req, res) => {
   try {
     const expense = await Expense.findById(req.params.id);
@@ -140,38 +172,46 @@ const deleteExpense = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Expense not found' });
     }
 
-    // Make sure user owns the expense
+    // Ensure authorization by checking that the resource belongs to the requesting user
     if (expense.userId.toString() !== req.user.id) {
       return res.status(401).json({ success: false, message: 'Not authorized to delete this expense' });
     }
 
     await Expense.findByIdAndDelete(req.params.id);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: {},
       message: 'Expense removed successfully',
     });
   } catch (error) {
     console.error('Delete Expense Error:', error.message);
-    res.status(500).json({ success: false, message: 'Server Error: ' + error.message });
+    return res.status(500).json({ success: false, message: 'Server Error: ' + error.message });
   }
 };
 
-// @desc    Get monthly reports / aggregation by category
-// @route   GET /api/expenses/reports/monthly
-// @access  Private
+/**
+ * @desc    Generate monthly report grouped by category
+ * @route   GET /api/expenses/reports/monthly
+ * @access  Private
+ *
+ * @param {import('express').Request} req - Express request with query params {month, year}
+ * @param {import('express').Response} res - Express response
+ * @returns {Promise<import('express').Response>} Summed expenses group aggregation data
+ */
 const getMonthlyReport = async (req, res) => {
   try {
     const { month, year } = req.query;
 
-    // Default to current month/year if not provided
+    // Use current year and month (1-indexed) if not specified in request query parameters
     const targetYear = parseInt(year, 10) || new Date().getFullYear();
-    const targetMonth = parseInt(month, 10) || (new Date().getMonth() + 1); // 1-12
+    const targetMonth = parseInt(month, 10) || (new Date().getMonth() + 1);
 
+    // Compute boundary timestamps for start and end of target month
     const start = new Date(targetYear, targetMonth - 1, 1);
     const end = new Date(targetYear, targetMonth, 0, 23, 59, 59, 999);
 
+    // Execute aggregation grouping matched expenses by category
     const report = await Expense.aggregate([
       {
         $match: {
@@ -191,17 +231,17 @@ const getMonthlyReport = async (req, res) => {
       },
     ]);
 
-    // Format the report response
+    // Format aggregation results cleanly
     const formatted = report.map((item) => ({
       category: item._id,
       amount: parseFloat(item.totalAmount.toFixed(2)),
       count: item.count,
     }));
 
-    // Calculate overall total
+    // Sum overall outflows for the month
     const totalSpent = formatted.reduce((acc, curr) => acc + curr.amount, 0);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: {
         year: targetYear,
@@ -212,47 +252,80 @@ const getMonthlyReport = async (req, res) => {
     });
   } catch (error) {
     console.error('Get Monthly Report Error:', error.message);
-    res.status(500).json({ success: false, message: 'Server Error: ' + error.message });
+    return res.status(500).json({ success: false, message: 'Server Error: ' + error.message });
   }
 };
 
-// @desc    Export expenses to CSV
-// @route   GET /api/expenses/export
-// @access  Private
+/**
+ * @desc    Export user's entire expense log to downloadable CSV file format
+ * @route   GET /api/expenses/export
+ * @access  Private
+ *
+ * @param {import('express').Request} req - Express request
+ * @param {import('express').Response} res - Express response
+ * @returns {Promise<void>} Sends CSV text directly as attachment response stream
+ */
 const exportExpensesCSV = async (req, res) => {
   try {
     const expenses = await Expense.find({ userId: req.user.id }).sort({ date: -1 });
 
-    // Set response headers for file download
+    // Set HTTP response headers to trigger file download dialog in user's browser
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename=expenses_export.csv');
 
-    // Create CSV Header
-    let csv = 'ID,Title,Amount,Category,Date,Source,Created At\n';
+    // Build CSV header line (changed from Source to Mode of Payment)
+    let csv = 'ID,Title,Amount,Category,Date,Mode of Payment,Created At\n';
 
-    // Populate CSV Rows
+    // Append record rows, escaping double quotes to prevent syntax parsing issues in spreadsheet software
     expenses.forEach((exp) => {
       const id = exp._id.toString();
-      const title = `"${exp.title.replace(/"/g, '""')}"`; // escape quotes
+      const title = `"${exp.title.replace(/"/g, '""')}"`;
       const amount = exp.amount;
       const category = exp.category;
       const date = exp.date.toISOString().split('T')[0];
-      const source = exp.source;
+      
+      // Determine user-friendly Mode of Payment based on transaction source
+      let modeOfPayment = exp.source || 'Manual';
+      if (modeOfPayment.startsWith('Bank Sync (')) {
+        const match = modeOfPayment.match(/Bank Sync \(([^)]+)\)/);
+        if (match) {
+          const bankId = match[1];
+          // Map legacy bank IDs to the new, updated bank names
+          const bankMap = {
+            'Chase': 'Kotak Mahindra Bank',
+            'BofA': 'State Bank of India',
+            'CapitalOne': 'Card',
+            'WellsFargo': 'Bank of Maharashtra',
+            'Kotak Mahindra Bank': 'Kotak Mahindra Bank',
+            'State Bank of India': 'State Bank of India',
+            'Card': 'Card',
+            'Bank of Maharashtra': 'Bank of Maharashtra'
+          };
+          modeOfPayment = bankMap[bankId] || bankId;
+        }
+      }
+      
       const createdAt = exp.createdAt.toISOString();
 
-      csv += `${id},${title},${amount},${category},${date},${source},${createdAt}\n`;
+      csv += `${id},${title},${amount},${category},${date},${modeOfPayment},${createdAt}\n`;
     });
 
-    res.status(200).send(csv);
+    return res.status(200).send(csv);
   } catch (error) {
     console.error('Export CSV Error:', error.message);
-    res.status(500).json({ success: false, message: 'Server Error: ' + error.message });
+    return res.status(500).json({ success: false, message: 'Server Error: ' + error.message });
   }
 };
 
-// @desc    Email complete expenses list as table & CSV attachment
-// @route   POST /api/expenses/email-list
-// @access  Private
+/**
+ * @desc    Send comprehensive expense list to user email with HTML report + CSV attachment
+ * @route   POST /api/expenses/email-list
+ * @access  Private
+ *
+ * @param {import('express').Request} req - Express request
+ * @param {import('express').Response} res - Express response
+ * @returns {Promise<import('express').Response>} Success confirmation status payload
+ */
 const emailExpensesList = async (req, res) => {
   try {
     const expenses = await Expense.find({ userId: req.user.id }).sort({ date: -1 });
@@ -261,15 +334,16 @@ const emailExpensesList = async (req, res) => {
       return res.status(400).json({ success: false, message: 'You do not have any expenses to email yet.' });
     }
 
+    // Trigger email dispatch utility function
     await sendExpenseListEmail(req.user.email, req.user.name, expenses);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: `Your complete expense sheet (${expenses.length} records) has been emailed successfully to ${req.user.email}!`,
     });
   } catch (error) {
     console.error('Email Expense List Error:', error.message);
-    res.status(500).json({ success: false, message: 'Failed to send email: ' + error.message });
+    return res.status(500).json({ success: false, message: 'Failed to send email: ' + error.message });
   }
 };
 

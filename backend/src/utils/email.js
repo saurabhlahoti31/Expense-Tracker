@@ -1,8 +1,20 @@
+/**
+ * @file email.js
+ * @description Utility functions for sending transactional emails (OTP, password resets, expense reports) via Nodemailer.
+ */
+
 const nodemailer = require('nodemailer');
 
 /**
  * Connects to the user's configured SMTP server and sends a complete
  * summary report of all expenses along with a CSV spreadsheet backup.
+ *
+ * @async
+ * @param {string} userEmail - Recipient user's email address
+ * @param {string} userName - Recipient user's name
+ * @param {Array<Object>} expenses - List of user's expense documents
+ * @throws {Error} Throws connection/SMTP errors if the report email fails to send
+ * @returns {Promise<Object>} SMTP transporter send response metadata
  */
 const sendExpenseListEmail = async (userEmail, userName, expenses) => {
   try {
@@ -51,17 +63,38 @@ const sendExpenseListEmail = async (userEmail, userName, expenses) => {
       `;
     }).join('');
 
-    // 2. Generate CSV Content for spreadsheet attachment
-    let csvContent = '\uFEFFID,Title,Amount,Category,Date,Source,Created At\n'; // added UTF-8 BOM
+    // 2. Generate CSV Content for spreadsheet attachment (changed from Source to Mode of Payment)
+    let csvContent = '\uFEFFID,Title,Amount,Category,Date,Mode of Payment,Created At\n'; // added UTF-8 BOM
     expenses.forEach((exp) => {
       const id = exp._id.toString();
       const title = `"${exp.title.replace(/"/g, '""')}"`;
       const amount = exp.amount;
       const category = exp.category;
       const date = exp.date.toISOString().split('T')[0];
-      const source = exp.source;
+
+      // Determine user-friendly Mode of Payment based on transaction source
+      let modeOfPayment = exp.source || 'Manual';
+      if (modeOfPayment.startsWith('Bank Sync (')) {
+        const match = modeOfPayment.match(/Bank Sync \(([^)]+)\)/);
+        if (match) {
+          const bankId = match[1];
+          // Map legacy bank IDs to the new, updated bank names
+          const bankMap = {
+            'Chase': 'Kotak Mahindra Bank',
+            'BofA': 'State Bank of India',
+            'CapitalOne': 'Card',
+            'WellsFargo': 'Bank of Maharashtra',
+            'Kotak Mahindra Bank': 'Kotak Mahindra Bank',
+            'State Bank of India': 'State Bank of India',
+            'Card': 'Card',
+            'Bank of Maharashtra': 'Bank of Maharashtra'
+          };
+          modeOfPayment = bankMap[bankId] || bankId;
+        }
+      }
+
       const createdAt = exp.createdAt.toISOString();
-      csvContent += `${id},${title},${amount},${category},${date},${source},${createdAt}\n`;
+      csvContent += `${id},${title},${amount},${category},${date},${modeOfPayment},${createdAt}\n`;
     });
 
     // Elegant HSL / Premium FinSync Dark Theme HTML Layout
@@ -278,6 +311,16 @@ const sendExpenseListEmail = async (userEmail, userName, expenses) => {
   }
 };
 
+/**
+ * Sends a registration confirmation OTP verification code via email.
+ * For convenience in local development, it also prints the OTP to the console.
+ *
+ * @async
+ * @param {string} userEmail - Recipient email address
+ * @param {string} userName - Recipient user's name
+ * @param {string} otp - Six-digit OTP verification code
+ * @returns {Promise<Object|null>} SMTP response metadata, or null if SMTP is unconfigured
+ */
 const sendOtpEmail = async (userEmail, userName, otp) => {
   // Always log to console first for convenience during local development/testing!
   console.log(`\n==========================================`);
@@ -453,6 +496,16 @@ const sendOtpEmail = async (userEmail, userName, otp) => {
   }
 };
 
+/**
+ * Sends a password reset OTP verification code via email.
+ * For convenience in local development, it also prints the OTP to the console.
+ *
+ * @async
+ * @param {string} userEmail - Recipient email address
+ * @param {string} userName - Recipient user's name
+ * @param {string} otp - Six-digit reset password OTP code
+ * @returns {Promise<Object|null>} SMTP response metadata, or null if SMTP is unconfigured
+ */
 const sendResetPasswordEmail = async (userEmail, userName, otp) => {
   console.log(`\n==========================================`);
   console.log(`🔑 [PASSWORD RESET OTP FOR ${userEmail}]`);

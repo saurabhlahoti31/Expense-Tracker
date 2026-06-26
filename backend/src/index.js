@@ -1,39 +1,48 @@
+/**
+ * @file index.js
+ * @description Main entry point for the FinSync Expense Tracker server. Sets up middleware, establishes DB connections, and exposes REST API routers.
+ */
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
 
-// Import routes
+// Import route definitions
 const authRoutes = require('./routes/auth.routes');
 const expenseRoutes = require('./routes/expense.routes');
 const bankRoutes = require('./routes/bank.routes');
 
 const app = express();
 
-// Middleware
-app.use(express.json());
+// Set up general middleware
+app.use(express.json()); // Parses incoming json payloads
+
+// Configure Cross-Origin Resource Sharing (CORS) rules
 app.use(cors({
-  origin: '*', // In development, allow requests from any frontend origin
+  origin: '*', // Allow all client domains in development; restrict in production environments
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Configure request logging using morgan
 app.use(morgan('dev'));
 
-// Database Connection
+// Connect to the MongoDB database
 connectDB();
 
-// API Routes
+// Bind API route endpoints
 app.use('/api/auth', authRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/bank', bankRoutes);
 
-// Health check endpoint
+// Server status checking health endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'Expense Tracker Server is healthy and running' });
 });
 
-// Global Error Handler
+// Register a global fallback error handling middleware
 app.use((err, req, res, next) => {
   console.error('Unhandled Server Error:', err.stack);
   res.status(500).json({

@@ -25,13 +25,13 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
   useEffect(() => {
     setIncomeInput((user.monthlyIncome || 5500).toString());
   }, [user.monthlyIncome]);
-  
+
   // Filters
   const [category, setCategory] = useState('All');
   const [search, setSearch] = useState('');
   const [month, setMonth] = useState(new Date().getMonth() + 1); // 1-12
   const [year, setYear] = useState(new Date().getFullYear());
-  
+
   // Add Expense Form State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -67,7 +67,7 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
         const updatedUser = { ...user, monthlyIncome: data.data.monthlyIncome };
         localStorage.setItem('user', JSON.stringify(updatedUser));
         setUser(updatedUser);
-        
+
         setIsEditingIncome(false);
         showToast('Monthly income updated successfully!', 'success');
       } else {
@@ -192,7 +192,7 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
 
     // Standard list of all categories to guarantee visibility
     const allCategoriesList = ['Food', 'Utilities', 'Entertainment', 'Transport', 'Shopping', 'Healthcare', 'Housing', 'Other'];
-    
+
     // Build category display items
     const displayItems = allCategoriesList.map(catName => {
       const match = categories.find(c => c.category === catName);
@@ -213,7 +213,7 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
           <svg width="100%" height="100%" viewBox="0 0 140 140">
             {/* Background base circle */}
             <circle cx="70" cy="70" r={radius} fill="transparent" stroke="rgba(255,255,255,0.03)" strokeWidth="16" />
-            
+
             {isReportEmpty ? (
               // Empty placeholder slice
               <circle cx="70" cy="70" r={radius} fill="transparent" stroke="rgba(255,255,255,0.08)" strokeWidth="14" />
@@ -304,7 +304,7 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
             const color = CATEGORY_COLORS[exp.category] || CATEGORY_COLORS.Other;
             return (
               <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, gap: '8px' }}>
-                <div 
+                <div
                   className="chart-bar-hover"
                   style={{
                     width: '60%',
@@ -333,13 +333,13 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
     <div className="dashboard-container">
       {/* Top Filter and Controls Panel */}
       <div className="glass-panel" style={{ padding: '20px 24px', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
           <div style={{ position: 'relative' }}>
             <Calendar size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
-            <select 
-              value={month} 
-              onChange={(e) => setMonth(parseInt(e.target.value))} 
-              className="form-input" 
+            <select
+              value={month}
+              onChange={(e) => setMonth(parseInt(e.target.value))}
+              className="form-input"
               style={{ width: '140px', paddingLeft: '38px', background: 'rgba(255,255,255,0.02)', cursor: 'pointer' }}
             >
               <option value={1}>January</option>
@@ -357,10 +357,10 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
             </select>
           </div>
 
-          <select 
-            value={year} 
-            onChange={(e) => setYear(parseInt(e.target.value))} 
-            className="form-input" 
+          <select
+            value={year}
+            onChange={(e) => setYear(parseInt(e.target.value))}
+            className="form-input"
             style={{ width: '100px', background: 'rgba(255,255,255,0.02)', cursor: 'pointer' }}
           >
             <option value={2025}>2025</option>
@@ -384,11 +384,11 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
             <form onSubmit={handleSaveIncome} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
               <div style={{ flex: 1 }}>
                 <label className="form-label" style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Edit Income</label>
-                <input 
-                  type="number" 
-                  className="form-input" 
-                  value={incomeInput} 
-                  onChange={(e) => setIncomeInput(e.target.value)} 
+                <input
+                  type="number"
+                  className="form-input"
+                  value={incomeInput}
+                  onChange={(e) => setIncomeInput(e.target.value)}
                   style={{ padding: '4px 10px', height: '34px', fontSize: '0.9rem', marginTop: '2px', background: 'rgba(0,0,0,0.2)' }}
                   autoFocus
                   required
@@ -405,9 +405,9 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
             </form>
           </div>
         ) : (
-          <div 
-            className="glass-panel stat-card animate-fade-in" 
-            style={{ cursor: 'pointer', position: 'relative' }} 
+          <div
+            className="glass-panel stat-card animate-fade-in"
+            style={{ cursor: 'pointer', position: 'relative' }}
             onClick={() => setIsEditingIncome(true)}
             title="Click to edit monthly income"
           >
@@ -441,7 +441,7 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
               ₹{netSavings.toLocaleString()}
             </p>
           </div>
-          <div className="stat-icon-wrapper" style={{ 
+          <div className="stat-icon-wrapper" style={{
             background: netSavings >= 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
             color: netSavings >= 0 ? '#10b981' : '#ef4444'
           }}>
@@ -484,19 +484,19 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
         </div>
 
         {/* Right Column: Bank API Widget */}
-        <BankSync 
-          user={user} 
+        <BankSync
+          user={user}
           setUser={setUser}
-          apiBase={apiBase} 
-          showToast={showToast} 
-          refreshData={fetchData} 
+          apiBase={apiBase}
+          showToast={showToast}
+          refreshData={fetchData}
           syncing={syncingBank}
           setSyncing={setSyncingBank}
         />
       </div>
 
       {/* Expenses Table Panel */}
-      <ExpenseTable 
+      <ExpenseTable
         expenses={expenses}
         onDelete={handleDeleteExpense}
         categoryFilter={category}
@@ -523,34 +523,34 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
             <form onSubmit={handleAddExpenseSubmit}>
               <div className="form-group">
                 <label className="form-label">Title / Merchant</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
+                <input
+                  type="text"
+                  className="form-input"
                   placeholder="e.g. Starbucks Coffee"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  required 
+                  required
                 />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                 <div className="form-group">
                   <label className="form-label">Amount (₹)</label>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     step="0.01"
                     min="0.01"
-                    className="form-input" 
+                    className="form-input"
                     placeholder="25.50"
                     value={newAmount}
                     onChange={(e) => setNewAmount(e.target.value)}
-                    required 
+                    required
                   />
                 </div>
 
                 <div className="form-group">
                   <label className="form-label">Category</label>
-                  <select 
+                  <select
                     className="form-input"
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
@@ -569,12 +569,12 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
 
               <div className="form-group" style={{ marginBottom: '24px' }}>
                 <label className="form-label">Transaction Date</label>
-                <input 
-                  type="date" 
+                <input
+                  type="date"
                   className="form-input"
                   value={newDate}
                   onChange={(e) => setNewDate(e.target.value)}
-                  required 
+                  required
                 />
               </div>
 

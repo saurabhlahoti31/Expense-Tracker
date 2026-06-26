@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Compass, RefreshCw, Unlink, Key, Check, Eye, EyeOff } from 'lucide-react';
 
 const BANKS = [
-  { id: 'Chase', name: 'Kotak Mahindra Bank', logo: '🏛️', color: '#115ec9' },
-  { id: 'BofA', name: 'State Bank of India', logo: '🏛️', color: '#dc2626' },
-  { id: 'CapitalOne', name: 'Card ', logo: '💳', color: '#092147' },
-  { id: 'WellsFargo', name: 'Bank of Maharashtra', logo: '🏛️', color: '#d97706' },
+  { id: 'Kotak Mahindra Bank', name: 'Kotak Mahindra Bank', logo: '🏛️', color: '#115ec9' },
+  { id: 'State Bank of India', name: 'State Bank of India', logo: '🏛️', color: '#dc2626' },
+  { id: 'Card', name: 'Card ', logo: '💳', color: '#092147' },
+  { id: 'Bank of Maharashtra', name: 'Bank of Maharashtra', logo: '🏛️', color: '#d97706' },
 ];
 
 const SYNC_STEPS = [

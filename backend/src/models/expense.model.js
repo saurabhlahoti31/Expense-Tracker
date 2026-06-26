@@ -1,5 +1,13 @@
+/**
+ * @file expense.model.js
+ * @description Mongoose schema definition and validators for the Expense collection.
+ */
+
 const mongoose = require('mongoose');
 
+/**
+ * Expense Schema definition for storing details about transaction records.
+ */
 const expenseSchema = new mongoose.Schema(
   {
     userId: {
@@ -38,6 +46,7 @@ const expenseSchema = new mongoose.Schema(
     },
   },
   {
+    // Auto-generate createdAt and updatedAt timestamps
     timestamps: true,
   }
 );

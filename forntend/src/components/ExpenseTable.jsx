@@ -12,12 +12,34 @@ const CATEGORY_BADGES = {
   Other: 'badge-secondary',    // Slate
 };
 
-function ExpenseTable({ 
-  expenses, 
-  onDelete, 
-  categoryFilter, 
-  setCategoryFilter, 
-  searchVal, 
+const getModeOfPayment = (source) => {
+  if (!source) return 'Manual';
+  if (source.startsWith('Bank Sync (')) {
+    const match = source.match(/Bank Sync \(([^)]+)\)/);
+    if (match) {
+      const bankId = match[1];
+      const bankMap = {
+        'Chase': 'Kotak Mahindra Bank',
+        'BofA': 'State Bank of India',
+        'CapitalOne': 'Card',
+        'WellsFargo': 'Bank of Maharashtra',
+        'Kotak Mahindra Bank': 'Kotak Mahindra Bank',
+        'State Bank of India': 'State Bank of India',
+        'Card': 'Card',
+        'Bank of Maharashtra': 'Bank of Maharashtra'
+      };
+      return bankMap[bankId] || bankId;
+    }
+  }
+  return source;
+};
+
+function ExpenseTable({
+  expenses,
+  onDelete,
+  categoryFilter,
+  setCategoryFilter,
+  searchVal,
   setSearchVal,
   apiBase,
   user,
@@ -73,7 +95,7 @@ function ExpenseTable({
       }
 
       const csvContent = await response.text();
-      
+
       // Create a blob and triggers a browser download
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
@@ -84,7 +106,7 @@ function ExpenseTable({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       showToast('CSV downloaded successfully!', 'success');
     } catch (err) {
       console.error(err);
@@ -99,15 +121,15 @@ function ExpenseTable({
         <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>
           Transactions Log
         </h3>
-        
+
         <div className="table-filters">
           {/* Search Box */}
           <div style={{ position: 'relative' }}>
             <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
-            <input 
-              type="text" 
-              className="form-input" 
-              placeholder="Search merchants..." 
+            <input
+              type="text"
+              className="form-input"
+              placeholder="Search merchants..."
               value={searchVal}
               onChange={(e) => setSearchVal(e.target.value)}
               style={{ width: '220px', paddingLeft: '36px', height: '40px', background: 'rgba(255,255,255,0.02)' }}
@@ -115,11 +137,11 @@ function ExpenseTable({
           </div>
 
           {/* Category Select Dropdown */}
-          <select 
-            value={categoryFilter} 
+          <select
+            value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
             className="form-input"
-            style={{ width: '150px', height: '40px', background: 'rgba(255,255,255,0.02)',color:'blue ', cursor: 'pointer' }}
+            style={{ width: '150px', height: '40px', background: 'rgba(255,255,255,0.02)', color: 'blue ', cursor: 'pointer' }}
           >
             <option value="All">All Categories</option>
             <option value="Food">Food</option>
@@ -139,12 +161,12 @@ function ExpenseTable({
           </button>
 
           {/* Email Expense List Button */}
-          <button 
-            className="btn btn-secondary" 
-            onClick={handleEmailList} 
-            disabled={emailLoading} 
-            style={{ 
-              height: '40px', 
+          <button
+            className="btn btn-secondary"
+            onClick={handleEmailList}
+            disabled={emailLoading}
+            style={{
+              height: '40px',
               background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%)',
               border: '1px solid rgba(99, 102, 241, 0.25)',
               color: '#c7d2fe',
@@ -152,7 +174,7 @@ function ExpenseTable({
               alignItems: 'center',
               gap: '6px',
               cursor: emailLoading ? 'not-allowed' : 'pointer'
-            }} 
+            }}
             title="Email Full Expense Report and CSV backup"
           >
             <Mail size={16} />
@@ -177,7 +199,7 @@ function ExpenseTable({
                 <th>Amount</th>
                 <th>Category</th>
                 <th>Date</th>
-                <th>Source</th>
+                <th>Mode of Payment</th>
                 <th style={{ width: '80px', textAlign: 'center' }}>Action</th>
               </tr>
             </thead>
@@ -227,12 +249,12 @@ function ExpenseTable({
                         color: isBankSource ? '#c084fc' : '#94a3b8',
                         fontSize: '0.75rem',
                       }}>
-                        {exp.source}
+                        {getModeOfPayment(exp.source)}
                       </span>
                     </td>
                     <td style={{ textAlign: 'center' }}>
-                      <button 
-                        className="btn btn-danger btn-icon" 
+                      <button
+                        className="btn btn-danger btn-icon"
                         onClick={() => onDelete(exp._id)}
                         style={{ padding: '6px' }}
                         title="Delete record"
