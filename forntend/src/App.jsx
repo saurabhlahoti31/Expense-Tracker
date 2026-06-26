@@ -24,6 +24,7 @@ function App() {
   const [monthlyIncome, setMonthlyIncome] = useState('50000');
   const [verifyingEmail, setVerifyingEmail] = useState(null);
   const [otp, setOtp] = useState('');
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
   // Global Toast Notification
   const [toast, setToast] = useState(null);
@@ -269,6 +270,11 @@ function App() {
 
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
+
+    if (!acceptTerms) {
+      showToast('Please accept the Terms and Conditions to proceed.', 'warning');
+      return;
+    }
 
     if (authView === 'register') {
       const strength = checkPasswordStrength(password);
@@ -775,10 +781,10 @@ function App() {
           >
             {theme === 'dark' ? <Sun size={18} style={{ color: '#f59e0b' }} /> : <Moon size={18} style={{ color: '#6366f1' }} />}
           </button>
-          <button className="btn btn-secondary" onClick={() => { setAuthView('login'); setIsAuthModalOpen(true); }}>
+          <button className="btn btn-secondary" onClick={() => { setAuthView('login'); setIsAuthModalOpen(true); setAcceptTerms(false); }}>
             Sign In
           </button>
-          <button className="btn btn-primary" onClick={() => { setAuthView('register'); setIsAuthModalOpen(true); }}>
+          <button className="btn btn-primary" onClick={() => { setAuthView('register'); setIsAuthModalOpen(true); setAcceptTerms(false); }}>
             Get Started
           </button>
         </div>
@@ -813,10 +819,10 @@ function App() {
                 {theme === 'dark' ? <Sun size={18} style={{ color: '#f59e0b' }} /> : <Moon size={18} style={{ color: '#6366f1' }} />}
               </button>
             </div>
-            <button className="btn btn-secondary" style={{ width: '100%', padding: '12px' }} onClick={() => { setAuthView('login'); setIsAuthModalOpen(true); setIsMobileMenuOpen(false); }}>
+            <button className="btn btn-secondary" style={{ width: '100%', padding: '12px' }} onClick={() => { setAuthView('login'); setIsAuthModalOpen(true); setIsMobileMenuOpen(false); setAcceptTerms(false); }}>
               Sign In
             </button>
-            <button className="btn btn-primary" style={{ width: '100%', padding: '12px' }} onClick={() => { setAuthView('register'); setIsAuthModalOpen(true); setIsMobileMenuOpen(false); }}>
+            <button className="btn btn-primary" style={{ width: '100%', padding: '12px' }} onClick={() => { setAuthView('register'); setIsAuthModalOpen(true); setIsMobileMenuOpen(false); setAcceptTerms(false); }}>
               Get Started
             </button>
           </div>
@@ -835,7 +841,7 @@ function App() {
             Connect bank feeds securely, visualize spending category reports in real-time, and automate your budgeting using standard financial principles. Make your savings count automatically.
           </p>
           <div className="hero-ctas">
-            <button className="btn btn-primary" style={{ padding: '14px 28px', fontSize: '1rem' }} onClick={() => { setAuthView('register'); setIsAuthModalOpen(true); }}>
+            <button className="btn btn-primary" style={{ padding: '14px 28px', fontSize: '1rem' }} onClick={() => { setAuthView('register'); setIsAuthModalOpen(true); setAcceptTerms(false); }}>
               Get Started Free <ArrowRight size={18} />
             </button>
             <button className="btn btn-secondary" style={{ padding: '14px 28px', fontSize: '1rem' }} onClick={() => scrollToSection('calculator')}>
@@ -1161,7 +1167,7 @@ function App() {
             {/* Close modal button */}
             <button
               className="modal-close"
-              onClick={() => { setIsAuthModalOpen(false); setVerifyingEmail(null); }}
+              onClick={() => { setIsAuthModalOpen(false); setVerifyingEmail(null); setAcceptTerms(false); }}
               style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', cursor: 'pointer' }}
             >
               <X size={20} />
@@ -1535,6 +1541,36 @@ function App() {
                     )}
                   </div>
 
+                  <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px', marginBottom: '24px', marginTop: '12px' }}>
+                    <input
+                      type="checkbox"
+                      id="termsCheckbox"
+                      checked={acceptTerms}
+                      onChange={(e) => setAcceptTerms(e.target.checked)}
+                      style={{
+                        cursor: 'pointer',
+                        accentColor: 'var(--accent-primary)',
+                        width: '16px',
+                        height: '16px',
+                        borderRadius: '4px',
+                        border: '1px solid rgba(255, 255, 255, 0.15)'
+                      }}
+                    />
+                    <label htmlFor="termsCheckbox" style={{ fontSize: '0.85rem', color: '#94a3b8', cursor: 'pointer', userSelect: 'none' }}>
+                      I agree to the{' '}
+                      <a
+                        href="#terms"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          showToast("Terms & Conditions: Please sync and track your expenses responsibly!", "info");
+                        }}
+                        style={{ color: '#6366f1', textDecoration: 'underline', fontWeight: 600 }}
+                      >
+                        Terms and Conditions
+                      </a>
+                    </label>
+                  </div>
+
                   <button
                     type="submit"
                     className="btn btn-primary"
@@ -1554,6 +1590,7 @@ function App() {
                       onClick={() => {
                         setAuthView(authView === 'login' ? 'register' : 'login');
                         setShowPassword(false);
+                        setAcceptTerms(false);
                       }}
                     >
                       {authView === 'login' ? 'Create one now' : 'Sign in instead'}
