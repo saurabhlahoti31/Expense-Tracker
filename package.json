@@ -10,5 +10,10 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@react-oauth/google": "^0.13.5",
+    "axios": "^1.18.1",
+    "jwt-decode": "^4.0.0"
+  }
 }
