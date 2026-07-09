@@ -486,6 +486,65 @@ const changePassword = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Authenticate/Register user via Google Sign-In
+ * @route   POST /api/auth/google-login
+ * @access  Public
+ *
+ * @param {import('express').Request} req - Express request with body {email, name, googleId}
+ * @param {import('express').Response} res - Express response
+ * @returns {Promise<import('express').Response>} HTTP response with authorization token or error details
+ */
+const googleLogin = async (req, res) => {
+  try {
+    const { email, name, googleId } = req.body;
+
+    if (!email || !googleId) {
+      return res.status(400).json({ success: false, message: 'Please provide email and googleId' });
+    }
+
+    // Find or create user
+    let user = await User.findOne({ email });
+
+    if (user) {
+      // User exists, update Google ID if not already set
+      if (!user.googleId) {
+        user.googleId = googleId;
+      }
+      // If user registered with email previously but wasn't verified, mark as verified now since Google verified it
+      if (!user.isVerified) {
+        user.isVerified = true;
+      }
+      await user.save();
+    } else {
+      // Create new user
+      user = new User({
+        name: name || email.split('@')[0],
+        email,
+        googleId,
+        isVerified: true, // Google accounts are pre-verified
+        monthlyIncome: 5500 // Default income
+      });
+      await user.save();
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        linkedBank: user.linkedBank,
+        monthlyIncome: user.monthlyIncome,
+        token: generateToken(user._id),
+      },
+    });
+  } catch (error) {
+    console.error('Google Login Error:', error.message);
+    return res.status(500).json({ success: false, message: 'Server Error: ' + error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -495,5 +554,6 @@ module.exports = {
   resendOtp,
   forgotPassword,
   resetPassword,
-  changePassword
+  changePassword,
+  googleLogin
 };

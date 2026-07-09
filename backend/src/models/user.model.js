@@ -30,8 +30,16 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
-      minlength: [8, 'Password must be at least 8 characters long'],
+      required: [
+        function() {
+          return !this.googleId;
+        },
+        'Password is required'
+      ],
+    },
+    googleId: {
+      type: String,
+      default: null,
     },
     linkedBank: {
       provider: {
@@ -83,7 +91,7 @@ const userSchema = new mongoose.Schema(
  * when the password attribute is modified or newly initialized.
  */
 userSchema.pre('save', async function () {
-  if (!this.isModified('password')) {
+  if (!this.isModified('password') || !this.password) {
     return;
   }
   const salt = await bcrypt.genSalt(10);

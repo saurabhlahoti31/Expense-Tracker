@@ -14,7 +14,8 @@ const {
   resendOtp,
   forgotPassword,
   resetPassword,
-  changePassword
+  changePassword,
+  googleLogin
 } = require('../controllers/auth.controller');
 const { protect } = require('../middleware/auth.middleware');
 
@@ -31,6 +32,13 @@ router.post('/register', registerUser);
  * @access  Public
  */
 router.post('/login', loginUser);
+
+/**
+ * @route   POST /api/auth/google-login
+ * @desc    Register or Login a user via Google Auth
+ * @access  Public
+ */
+router.post('/google-login', googleLogin);
 
 /**
  * @route   POST /api/auth/verify-otp
