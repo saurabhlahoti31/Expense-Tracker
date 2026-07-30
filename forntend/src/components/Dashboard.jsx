@@ -22,6 +22,12 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
   const [isEditingIncome, setIsEditingIncome] = useState(false);
   const [incomeInput, setIncomeInput] = useState((user.monthlyIncome || 5500).toString());
 
+  const handleUnauthorized = () => {
+    localStorage.removeItem('user');
+    setUser(null);
+    showToast('Session expired. Please log in again.', 'danger');
+  };
+
   useEffect(() => {
     setIncomeInput((user.monthlyIncome || 5500).toString());
   }, [user.monthlyIncome]);
@@ -62,6 +68,11 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
         body: JSON.stringify({ income: parsedIncome }),
       });
 
+      if (response.status === 401) {
+        handleUnauthorized();
+        return;
+      }
+
       const data = await response.json();
       if (response.ok) {
         const updatedUser = { ...user, monthlyIncome: data.data.monthlyIncome };
@@ -91,6 +102,10 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
           },
         }
       );
+      if (expRes.status === 401) {
+        handleUnauthorized();
+        return;
+      }
       const expData = await expRes.json();
       if (expRes.ok) {
         setExpenses(expData.data);
@@ -105,6 +120,10 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
           },
         }
       );
+      if (repRes.status === 401) {
+        handleUnauthorized();
+        return;
+      }
       const repData = await repRes.json();
       if (repRes.ok) {
         setReports(repData.data);
@@ -144,6 +163,11 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
         }),
       });
 
+      if (response.status === 401) {
+        handleUnauthorized();
+        return;
+      }
+
       const data = await response.json();
       if (response.ok) {
         showToast('Expense added successfully!', 'success');
@@ -172,6 +196,11 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
           Authorization: `Bearer ${user.token}`,
         },
       });
+
+      if (response.status === 401) {
+        handleUnauthorized();
+        return;
+      }
 
       if (response.ok) {
         showToast('Expense removed', 'success');
@@ -492,6 +521,7 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
           refreshData={fetchData}
           syncing={syncingBank}
           setSyncing={setSyncingBank}
+          handleUnauthorized={handleUnauthorized}
         />
       </div>
 
@@ -506,6 +536,7 @@ function Dashboard({ user, setUser, apiBase, showToast }) {
         apiBase={apiBase}
         user={user}
         showToast={showToast}
+        handleUnauthorized={handleUnauthorized}
       />
 
       {/* Add Expense Modal */}

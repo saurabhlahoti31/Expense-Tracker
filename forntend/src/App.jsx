@@ -211,6 +211,16 @@ function App() {
         body: JSON.stringify({ currentPassword, newPassword: changeNewPassword }),
       });
 
+      if (response.status === 401) {
+        localStorage.removeItem('user');
+        setUser(null);
+        setName('');
+        setEmail('');
+        setPassword('');
+        showToast('Session expired. Please log in again.', 'danger');
+        return;
+      }
+
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.message || 'Failed to change password');
@@ -470,6 +480,16 @@ function App() {
         },
         body: JSON.stringify({ income: parsedIncome }),
       });
+
+      if (response.status === 401) {
+        localStorage.removeItem('user');
+        setUser(null);
+        setName('');
+        setEmail('');
+        setPassword('');
+        showToast('Session expired. Please log in again.', 'danger');
+        return;
+      }
 
       const resData = await response.json();
       if (response.ok) {

@@ -16,7 +16,7 @@ const SYNC_STEPS = [
   { pct: 100, msg: 'Finalizing database sync...' },
 ];
 
-function BankSync({ user, setUser, apiBase, showToast, refreshData, syncing, setSyncing }) {
+function BankSync({ user, setUser, apiBase, showToast, refreshData, syncing, setSyncing, handleUnauthorized }) {
   const [selectedBank, setSelectedBank] = useState(null);
   const [credentialsModal, setCredentialsModal] = useState(false);
   const [username, setUsername] = useState('');
@@ -66,6 +66,11 @@ function BankSync({ user, setUser, apiBase, showToast, refreshData, syncing, set
         },
         body: JSON.stringify({ provider: bankId }),
       });
+
+      if (res.status === 401) {
+        handleUnauthorized();
+        return;
+      }
 
       const data = await res.json();
 
@@ -119,6 +124,12 @@ function BankSync({ user, setUser, apiBase, showToast, refreshData, syncing, set
           Authorization: `Bearer ${user.token}`,
         },
       });
+
+      if (res.status === 401) {
+        handleUnauthorized();
+        return;
+      }
+
       const data = await res.json();
 
       if (res.ok) {

@@ -43,7 +43,8 @@ function ExpenseTable({
   setSearchVal,
   apiBase,
   user,
-  showToast
+  showToast,
+  handleUnauthorized
 }) {
   const [emailLoading, setEmailLoading] = React.useState(false);
 
@@ -64,6 +65,11 @@ function ExpenseTable({
           Authorization: `Bearer ${user.token}`,
         },
       });
+
+      if (response.status === 401) {
+        handleUnauthorized();
+        return;
+      }
 
       const resData = await response.json();
 
@@ -89,6 +95,11 @@ function ExpenseTable({
           Authorization: `Bearer ${user.token}`,
         },
       });
+
+      if (response.status === 401) {
+        handleUnauthorized();
+        return;
+      }
 
       if (!response.ok) {
         throw new Error('Could not download CSV file');
